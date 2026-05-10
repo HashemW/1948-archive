@@ -1,18 +1,19 @@
+// Add this to your existing types/history.ts
 export type AtrocityType = 'massacre' | 'expulsion' | 'depopulation' | 'skirmish';
 
 export interface Citation {
-  historian: 'Benny Morris' | 'Avi Shlaim' | 'Ilan Pappe' | 'Other';
+  historian: string;
   book: string;
   pageNumber: number;
   quote: string;
-  archiveReference?: string; // e.g., "IDF Archive 123/456"
 }
 
 export interface AtrocityEvent {
   id: string;
   name: string;
   type: AtrocityType;
-  date: string; // ISO format: "1948-05-15"
+  perpetrator: 'israeli' | 'arab' | 'other'; // NEW STRICT FIELD
+  date: string;
   coordinates: {
     lng: number;
     lat: number;

@@ -14,7 +14,9 @@ const COLORS = {
   bordersBland: '#1f1f1f',  
   bordersImportant: '#00f2ff',
   eventGlow: '#ff003c',    
-  eventCore: '#ffffff'     
+  eventCoreIsraeli: '#ffffff', // Pure white
+  eventCoreArab: '#ffb700',    // Warning Amber
+  eventCoreOther: '#888888'    // Neutral Grey fallback
 };
 
 const MAP_DATA_URL = "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_countries.geojson";
@@ -36,7 +38,8 @@ export const MapShell = ({ onEventClick }: MapShellProps) => {
           coordinates: [event.coordinates.lng, event.coordinates.lat] as [number, number]
         },
         properties: {
-          id: event.id
+          id: event.id,
+          perpetrator: event.perpetrator // NEW: The engine needs to know who did it
         }
       }))
     };
@@ -48,7 +51,20 @@ export const MapShell = ({ onEventClick }: MapShellProps) => {
   const theaterBorders: LineLayer = { id: 'theater-borders', type: 'line', filter: ['in', 'admin', 'Israel', 'Palestine'], paint: { 'line-color': COLORS.bordersImportant, 'line-width': 2 } };
   
   const eventGlowLayer: CircleLayer = { id: 'event-glow', type: 'circle', paint: { 'circle-color': COLORS.eventGlow, 'circle-radius': 12, 'circle-blur': 0.8, 'circle-opacity': 0.6 } };
-  const eventCoreLayer: CircleLayer = { id: 'event-core', type: 'circle', paint: { 'circle-color': COLORS.eventCore, 'circle-radius': 3 } };
+  const eventCoreLayer: CircleLayer = {
+    id: 'event-core',
+    type: 'circle',
+    paint: {
+      'circle-color': [
+        'match',
+        ['get', 'perpetrator'],
+        'israeli', COLORS.eventCoreIsraeli,
+        'arab', COLORS.eventCoreArab,
+        COLORS.eventCoreOther // If it doesn't match, make it grey
+      ],
+      'circle-radius': 3
+    }
+  };
 
   // NEW: State to manage the cursor style
   const [cursor, setCursor] = useState<string>('auto');
